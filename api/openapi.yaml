@@ -1,0 +1,2982 @@
+openapi: 3.0.0
+info:
+  description: This is the Policy Authorization Service
+  title: Npcf_PolicyAuthorization Service API
+  version: 1.0.0
+externalDocs:
+  description: 3GPP TS 29.514 V15.2.0; 5G System; Policy Authorization Service;Stage 3.
+  url: http://www.3gpp.org/ftp/Specs/archive/29_series/29.514/
+servers:
+- url: '{apiRoot}/npcf-policyauthorization/v1'
+  variables:
+    apiRoot:
+      default: https://example.com
+      description: apiRoot as defined in subclause 4.4 of 3GPP TS 29.501
+security:
+- {}
+- oAuth2ClientCredentials:
+  - npcf-policyauthorization
+paths:
+  /app-sessions:
+    post:
+      callbacks:
+        terminationRequest:
+          '{$request.body#/notifUri}/terminate':
+            post:
+              operationId: terminationRequest_TerminatePost
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/TerminationInfo'
+                description: Request of the termination of the Individual Application Session Context
+              responses:
+                204:
+                  description: The receipt of the notification is acknowledged.
+                400:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Bad request
+                401:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unauthorized
+                403:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Forbidden
+                404:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Not Found
+                411:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Length Required
+                413:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Payload Too Large
+                415:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unsupported Media Type
+                429:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Too Many Requests
+                500:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Internal Server Error
+                503:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Service Unavailable
+                default:
+                  description: Generic Error
+              x-callback-request: true
+        eventNotification:
+          '{$request.body#/evSubsc/notifUri}/notify':
+            post:
+              operationId: eventNotification_NotifyPost
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+                description: Notification of an event occurrence in the PCF.
+              responses:
+                204:
+                  description: The receipt of the notification is acknowledged
+                400:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Bad request
+                401:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unauthorized
+                403:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Forbidden
+                404:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Not Found
+                411:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Length Required
+                413:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Payload Too Large
+                415:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unsupported Media Type
+                429:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Too Many Requests
+                500:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Internal Server Error
+                503:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Service Unavailable
+                default:
+                  description: Generic Error
+              x-callback-request: true
+      operationId: PostAppSessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppSessionContext'
+        description: Contains the information for the creation the resource
+        required: true
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+          description: Successful creation of the resource
+          headers:
+            Location:
+              description: 'Contains the URI of the created individual application
+                session context resource, according to the structure: {apiRoot}/npcf-policyauthorization/v1/app-sessions/{appSessionId}
+                or the URI of the created events subscription sub-resource, according
+                to the structure: {apiRoot}/npcf-policyauthorization/v1/app-sessions/{appSessionId}/events-subscription}'
+              explode: false
+              required: true
+              schema:
+                type: string
+              style: simple
+        303:
+          description: See Other. The result of the HTTP POST request would be equivalent to the existing Application Session Context. The HTTP response shall contain a Location header field set to the URI of the existing individual Application Session Context resource
+        400:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad request
+        401:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unauthorized
+        403:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Forbidden
+        404:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+        411:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Length Required
+        413:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Payload Too Large
+        415:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unsupported Media Type
+        429:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Too Many Requests
+        500:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Internal Server Error
+        503:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Service Unavailable
+        default:
+          description: Generic Error
+      summary: Creates a new Individual Application Session Context resource
+      tags:
+      - Application Sessions (Collection)
+  /app-sessions/{appSessionId}:
+    get:
+      operationId: GetAppSession
+      parameters:
+      - description: string identifying the resource
+        explode: false
+        in: path
+        name: appSessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+          description: A representation of the resource is returned.
+        400:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad request
+        401:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unauthorized
+        403:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Forbidden
+        404:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+        406:
+          description: 406 Not Acceptable
+        429:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Too Many Requests
+        500:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Internal Server Error
+        503:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Service Unavailable
+        default:
+          description: Generic Error
+      summary: Reads an existing Individual Application Session Context
+      tags:
+      - Individual Application Session Context (Document)
+    patch:
+      callbacks:
+        eventNotification:
+          '{$request.body#/evSubsc/notifUri}/notify':
+            post:
+              operationId: eventNotification_NotifyPost
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+                description: Notification of an event occurrence in the PCF.
+              responses:
+                204:
+                  description: The receipt of the notification is acknowledged
+                400:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Bad request
+                401:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unauthorized
+                403:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Forbidden
+                404:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Not Found
+                411:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Length Required
+                413:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Payload Too Large
+                415:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unsupported Media Type
+                429:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Too Many Requests
+                500:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Internal Server Error
+                503:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Service Unavailable
+                default:
+                  description: Generic Error
+              x-callback-request: true
+      operationId: ModAppSession
+      parameters:
+      - description: string identifying the resource
+        explode: false
+        in: path
+        name: appSessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/AppSessionContextUpdateData'
+        description: modification of the resource.
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+          description: successful modification of the resource and a representation of that resource is returned
+        204:
+          description: The successful modification
+        400:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad request
+        401:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unauthorized
+        403:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Forbidden
+        404:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+        411:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Length Required
+        413:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Payload Too Large
+        415:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unsupported Media Type
+        429:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Too Many Requests
+        500:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Internal Server Error
+        503:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Service Unavailable
+        default:
+          description: Generic Error
+      summary: Modifies an existing Individual Application Session Context
+      tags:
+      - Individual Application Session Context (Document)
+  /app-sessions/{appSessionId}/delete:
+    post:
+      operationId: DeleteAppSession
+      parameters:
+      - description: string identifying the Individual Application Session Context resource
+        explode: false
+        in: path
+        name: appSessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsSubscReqData'
+        description: deletion of the Individual Application Session Context resource, req notification
+        required: false
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSessionContext'
+          description: The deletion of the resource is confirmed and a resource is returned
+        204:
+          description: The deletion is confirmed without returning additional data.
+        400:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad request
+        401:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unauthorized
+        403:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Forbidden
+        404:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+        411:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails_2'
+          description: Length Required
+        413:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Payload Too Large
+        415:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unsupported Media Type
+        429:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails_2'
+          description: Too Many Requests
+        500:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Internal Server Error
+        503:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Service Unavailable
+        default:
+          description: Generic Error
+      summary: Deletes an existing Individual Application Session Context
+      tags:
+      - Individual Application Session Context (Document)
+  /app-sessions/{appSessionId}/events-subscription:
+    delete:
+      operationId: DeleteEventsSubsc
+      parameters:
+      - description: string identifying the Individual Application Session Context resource
+        explode: false
+        in: path
+        name: appSessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        204:
+          description: The deletion of the of the Events Subscription sub-resource is confirmed without returning additional data.
+        400:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad request
+        401:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unauthorized
+        403:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Forbidden
+        404:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+        429:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Too Many Requests
+        500:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Internal Server Error
+        503:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Service Unavailable
+        default:
+          description: Generic Error
+      summary: deletes the Events Subscription subresource
+      tags:
+      - Events Subscription (Document)
+    put:
+      callbacks:
+        eventNotification:
+          '{$request.body#/notifUri}/notify':
+            post:
+              operationId: eventNotification_NotifyPost
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/EventsNotification'
+                description: Contains the information for the notification of an event occurrence in the PCF.
+              responses:
+                204:
+                  description: The receipt of the notification is acknowledged.
+                400:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Bad request
+                401:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unauthorized
+                403:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Forbidden
+                404:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Not Found
+                411:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Length Required
+                413:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Payload Too Large
+                415:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Unsupported Media Type
+                429:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Too Many Requests
+                500:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Internal Server Error
+                503:
+                  content:
+                    application/problem+json:
+                      schema:
+                        $ref: '#/components/schemas/ProblemDetails'
+                  description: Service Unavailable
+                default:
+                  description: Generic Error
+              x-callback-request: true
+      operationId: updateEventsSubsc
+      parameters:
+      - description: string identifying the Events Subscription resource
+        explode: false
+        in: path
+        name: appSessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventsSubscReqData'
+        description: Creation or modification of an Events Subscription resource.
+        required: true
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/EventsSubscReqData'
+                - $ref: '#/components/schemas/EventsNotification'
+          description: The creation of the Events Subscription resource is confirmed and its representation is returned.
+          headers:
+            Location:
+              description: 'Contains the URI of the created Events Subscription resource,
+                according to the structure: {apiRoot}/npcf-policyauthorization/v1/app-sessions/{appSessionId}/events-subscription}'
+              explode: false
+              required: true
+              schema:
+                type: string
+              style: simple
+        200:
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/EventsSubscReqData'
+                - $ref: '#/components/schemas/EventsNotification'
+          description: The modification of the of the Events Subscription resource is confirmed its representation is returned.
+        204:
+          description: The modification of the Events Subscription subresource is confirmed without returning additional data.
+        400:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Bad request
+        401:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unauthorized
+        403:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Forbidden
+        404:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Not Found
+        411:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Length Required
+        413:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Payload Too Large
+        415:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Unsupported Media Type
+        429:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Too Many Requests
+        500:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Internal Server Error
+        503:
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+          description: Service Unavailable
+        default:
+          description: Generic Error
+      summary: creates or modifies an Events Subscription subresource
+      tags:
+      - Events Subscription (Document)
+components:
+  schemas:
+    AppSessionContext:
+      description: Represents an Individual Application Session Context resource.
+      example:
+        ascReqData:
+          ueMac: ueMac
+          notifUri: notifUri
+          afAppId: afAppId
+          dnn: dnn
+          ipDomain: ipDomain
+          evSubsc:
+            notifUri: notifUri
+            usgThres:
+              duration: 0
+              totalVolume: 0
+              downlinkVolume: 0
+              uplinkVolume: 0
+            events:
+            - {}
+            - {}
+          afRoutReq:
+            upPathChgSub:
+              notifCorreId: notifCorreId
+              notificationUri: notificationUri
+            appReloc: true
+            tempVals:
+            - startTime: 2000-01-23T04:56:07.000+00:00
+              stopTime: 2000-01-23T04:56:07.000+00:00
+            - startTime: 2000-01-23T04:56:07.000+00:00
+              stopTime: 2000-01-23T04:56:07.000+00:00
+            routeToLocs:
+            - dnai: dnai
+              routeInfo:
+                ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+                ipv4Addr: 198.51.100.1
+                portNumber: 0
+              routeProfId: routeProfId
+            - dnai: dnai
+              routeInfo:
+                ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+                ipv4Addr: 198.51.100.1
+                portNumber: 0
+              routeProfId: routeProfId
+            spVal:
+              presenceInfoList:
+                key:
+                  ecgiList:
+                  - eutraCellId: eutraCellId
+                    plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                  - eutraCellId: eutraCellId
+                    plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                  globalRanNodeIdList:
+                  - gNbId:
+                      bitLength: 28
+                      gNBValue: gNBValue
+                    plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                  - gNbId:
+                      bitLength: 28
+                      gNBValue: gNBValue
+                    plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                  praId: praId
+                  trackingAreaList:
+                  - tac: tac
+                    plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                  - tac: tac
+                    plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                  ncgiList:
+                  - plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                    nrCellId: nrCellId
+                  - plmnId:
+                      mnc: mnc
+                      mcc: mcc
+                    nrCellId: nrCellId
+          sliceInfo:
+            sd: sd
+            sst: 51
+          sponId: sponId
+          ueIpv4: 198.51.100.1
+          supi: supi
+          ueIpv6: 2001:db8:85a3::8a2e:370:7334
+          aspId: aspId
+          bdtRefId: bdtRefId
+          medComponents:
+            key:
+              afAppId: afAppId
+              contVer: 7
+              codecs:
+              - null
+              - null
+              afRoutReq:
+                upPathChgSub:
+                  notifCorreId: notifCorreId
+                  notificationUri: notificationUri
+                appReloc: true
+                tempVals:
+                - startTime: 2000-01-23T04:56:07.000+00:00
+                  stopTime: 2000-01-23T04:56:07.000+00:00
+                - startTime: 2000-01-23T04:56:07.000+00:00
+                  stopTime: 2000-01-23T04:56:07.000+00:00
+                routeToLocs:
+                - dnai: dnai
+                  routeInfo:
+                    ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+                    ipv4Addr: 198.51.100.1
+                    portNumber: 0
+                  routeProfId: routeProfId
+                - dnai: dnai
+                  routeInfo:
+                    ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+                    ipv4Addr: 198.51.100.1
+                    portNumber: 0
+                  routeProfId: routeProfId
+                spVal:
+                  presenceInfoList:
+                    key:
+                      ecgiList:
+                      - eutraCellId: eutraCellId
+                        plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                      - eutraCellId: eutraCellId
+                        plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                      globalRanNodeIdList:
+                      - gNbId:
+                          bitLength: 28
+                          gNBValue: gNBValue
+                        plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                      - gNbId:
+                          bitLength: 28
+                          gNBValue: gNBValue
+                        plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                      praId: praId
+                      trackingAreaList:
+                      - tac: tac
+                        plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                      - tac: tac
+                        plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                      ncgiList:
+                      - plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                        nrCellId: nrCellId
+                      - plmnId:
+                          mnc: mnc
+                          mcc: mcc
+                        nrCellId: nrCellId
+              marBwDl: marBwDl
+              mirBwDl: mirBwDl
+              medCompN: 9
+              mirBwUl: mirBwUl
+              marBwUl: marBwUl
+              medSubComps:
+                key:
+                  fDescs:
+                  - null
+                  - null
+                  tosTrCl: tosTrCl
+                  marBwDl: marBwDl
+                  ethfDescs:
+                  - destMacAddr: destMacAddr
+                    sourceMacAddr: sourceMacAddr
+                    ethType: ethType
+                    fDesc: fDesc
+                    vlanTags:
+                    - vlanTags
+                    - vlanTags
+                  - destMacAddr: destMacAddr
+                    sourceMacAddr: sourceMacAddr
+                    ethType: ethType
+                    fDesc: fDesc
+                    vlanTags:
+                    - vlanTags
+                    - vlanTags
+                  marBwUl: marBwUl
+                  fNum: 3
+          suppFeat: suppFeat
+          mpsId: mpsId
+        ascRespData:
+          suppFeat: suppFeat
+        evsNotif:
+          qncReports:
+          - flows:
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+          - flows:
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+          evNotifs:
+          - flows:
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+          - flows:
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+          evSubsUri: evSubsUri
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+          failedResourcAllocReports:
+          - flows:
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+          - flows:
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+            - fNums:
+              - 4
+              - 4
+              contVers:
+              - null
+              - null
+              medCompN: 7
+          anGwAddr:
+            anGwIpv6Addr: 2001:db8:85a3::8a2e:370:7334
+            anGwIpv4Addr: 198.51.100.1
+          usgRep:
+            duration: 0
+            totalVolume: 0
+            downlinkVolume: 0
+            uplinkVolume: 0
+      properties:
+        ascReqData:
+          $ref: '#/components/schemas/AppSessionContextReqData'
+        ascRespData:
+          $ref: '#/components/schemas/AppSessionContextRespData'
+        evsNotif:
+          $ref: '#/components/schemas/EventsNotification'
+      type: object
+    AppSessionContextReqData:
+      description: Identifies the service requirements of an Individual Application Session Context.
+      example:
+        ueMac: ueMac
+        notifUri: notifUri
+        afAppId: afAppId
+        dnn: dnn
+        ipDomain: ipDomain
+        evSubsc:
+          notifUri: notifUri
+          usgThres:
+            duration: 0
+            totalVolume: 0
+            downlinkVolume: 0
+            uplinkVolume: 0
+          events:
+          - {}
+          - {}
+        afRoutReq:
+          upPathChgSub:
+            notifCorreId: notifCorreId
+            notificationUri: notificationUri
+          appReloc: true
+          tempVals:
+          - startTime: 2000-01-23T04:56:07.000+00:00
+            stopTime: 2000-01-23T04:56:07.000+00:00
+          - startTime: 2000-01-23T04:56:07.000+00:00
+            stopTime: 2000-01-23T04:56:07.000+00:00
+          routeToLocs:
+          - dnai: dnai
+            routeInfo:
+              ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+              ipv4Addr: 198.51.100.1
+              portNumber: 0
+            routeProfId: routeProfId
+          - dnai: dnai
+            routeInfo:
+              ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+              ipv4Addr: 198.51.100.1
+              portNumber: 0
+            routeProfId: routeProfId
+          spVal:
+            presenceInfoList:
+              key:
+                ecgiList:
+                - eutraCellId: eutraCellId
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                - eutraCellId: eutraCellId
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                globalRanNodeIdList:
+                - gNbId:
+                    bitLength: 28
+                    gNBValue: gNBValue
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                - gNbId:
+                    bitLength: 28
+                    gNBValue: gNBValue
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                praId: praId
+                trackingAreaList:
+                - tac: tac
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                - tac: tac
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                ncgiList:
+                - plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                  nrCellId: nrCellId
+                - plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                  nrCellId: nrCellId
+        sliceInfo:
+          sd: sd
+          sst: 51
+        sponId: sponId
+        ueIpv4: 198.51.100.1
+        supi: supi
+        ueIpv6: 2001:db8:85a3::8a2e:370:7334
+        aspId: aspId
+        bdtRefId: bdtRefId
+        medComponents:
+          key:
+            afAppId: afAppId
+            contVer: 7
+            codecs:
+            - null
+            - null
+            afRoutReq:
+              upPathChgSub:
+                notifCorreId: notifCorreId
+                notificationUri: notificationUri
+              appReloc: true
+              tempVals:
+              - startTime: 2000-01-23T04:56:07.000+00:00
+                stopTime: 2000-01-23T04:56:07.000+00:00
+              - startTime: 2000-01-23T04:56:07.000+00:00
+                stopTime: 2000-01-23T04:56:07.000+00:00
+              routeToLocs:
+              - dnai: dnai
+                routeInfo:
+                  ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+                  ipv4Addr: 198.51.100.1
+                  portNumber: 0
+                routeProfId: routeProfId
+              - dnai: dnai
+                routeInfo:
+                  ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+                  ipv4Addr: 198.51.100.1
+                  portNumber: 0
+                routeProfId: routeProfId
+              spVal:
+                presenceInfoList:
+                  key:
+                    ecgiList:
+                    - eutraCellId: eutraCellId
+                      plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                    - eutraCellId: eutraCellId
+                      plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                    globalRanNodeIdList:
+                    - gNbId:
+                        bitLength: 28
+                        gNBValue: gNBValue
+                      plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                    - gNbId:
+                        bitLength: 28
+                        gNBValue: gNBValue
+                      plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                    praId: praId
+                    trackingAreaList:
+                    - tac: tac
+                      plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                    - tac: tac
+                      plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                    ncgiList:
+                    - plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                      nrCellId: nrCellId
+                    - plmnId:
+                        mnc: mnc
+                        mcc: mcc
+                      nrCellId: nrCellId
+            marBwDl: marBwDl
+            mirBwDl: mirBwDl
+            medCompN: 9
+            mirBwUl: mirBwUl
+            marBwUl: marBwUl
+            medSubComps:
+              key:
+                fDescs:
+                - null
+                - null
+                tosTrCl: tosTrCl
+                marBwDl: marBwDl
+                ethfDescs:
+                - destMacAddr: destMacAddr
+                  sourceMacAddr: sourceMacAddr
+                  ethType: ethType
+                  fDesc: fDesc
+                  vlanTags:
+                  - vlanTags
+                  - vlanTags
+                - destMacAddr: destMacAddr
+                  sourceMacAddr: sourceMacAddr
+                  ethType: ethType
+                  fDesc: fDesc
+                  vlanTags:
+                  - vlanTags
+                  - vlanTags
+                marBwUl: marBwUl
+                fNum: 3
+        suppFeat: suppFeat
+        mpsId: mpsId
+      properties:
+        afAppId:
+          description: Contains an AF application identifier.
+          type: string
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirement'
+        aspId:
+          description: Contains an identity of an application service provider.
+          type: string
+        bdtRefId:
+          description: string identifying a BDT Reference ID as defined in subclause 5.3.3 of 3GPP TS 29.154.
+          type: string
+        dnn:
+          type: string
+        evSubsc:
+          $ref: '#/components/schemas/EventsSubscReqData'
+        medComponents:
+          additionalProperties:
+            $ref: '#/components/schemas/MediaComponent'
+          minProperties: 1
+          type: object
+        ipDomain:
+          type: string
+        mpsId:
+          description: indication of MPS service request
+          type: string
+        notifUri:
+          type: string
+        sliceInfo:
+          $ref: '#/components/schemas/Snssai'
+        sponId:
+          description: Contains an identity of a sponsor.
+          type: string
+        sponStatus:
+          $ref: '#/components/schemas/SponsoringStatus'
+        supi:
+          pattern: ^(imsi-[0-9]{5,15}|nai-.+|.+)$
+          type: string
+        suppFeat:
+          pattern: ^[A-Fa-f0-9]*$
+          type: string
+        ueIpv4:
+          example: 198.51.100.1
+          pattern: ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$
+          type: string
+        ueIpv6:
+          $ref: '#/components/schemas/Ipv6Addr'
+        ueMac:
+          pattern: ^([0-9a-fA-F]{2})((-[0-9a-fA-F]{2}){5})$
+          type: string
+      required:
+      - notifUri
+      - suppFeat
+      type: object
+    AppSessionContextRespData:
+      description: Describes the authorization data of an Individual Application Session Context created by the PCF.
+      example:
+        suppFeat: suppFeat
+      properties:
+        servAuthInfo:
+          $ref: '#/components/schemas/ServAuthInfo'
+        suppFeat:
+          pattern: ^[A-Fa-f0-9]*$
+          type: string
+      type: object
+    AppSessionContextUpdateData:
+      description: Identifies the modifications to an Individual Application Session Context and may include the modifications to the sub-resource Events Subscription.
+      properties:
+        afAppId:
+          description: Contains an AF application identifier.
+          type: string
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirementRm'
+        aspId:
+          description: Contains an identity of an application service provider.
+          type: string
+        bdtRefId:
+          description: string identifying a BDT Reference ID as defined in subclause 5.3.3 of 3GPP TS 29.154.
+          type: string
+        evSubsc:
+          $ref: '#/components/schemas/EventsSubscReqDataRm'
+        medComponents:
+          additionalProperties:
+            $ref: '#/components/schemas/MediaComponentRm'
+          minProperties: 1
+          type: object
+        mpsId:
+          description: indication of MPS service request
+          type: string
+        sponId:
+          description: Contains an identity of a sponsor.
+          type: string
+        sponStatus:
+          $ref: '#/components/schemas/SponsoringStatus'
+      type: object
+    EventsSubscReqData:
+      description: Identifies the events the application subscribes to.
+      example:
+        notifUri: notifUri
+        usgThres:
+          duration: 0
+          totalVolume: 0
+          downlinkVolume: 0
+          uplinkVolume: 0
+        events:
+        - {}
+        - {}
+      properties:
+        events:
+          items:
+            $ref: '#/components/schemas/AfEventSubscription'
+          minItems: 1
+          type: array
+        notifUri:
+          type: string
+        usgThres:
+          $ref: '#/components/schemas/UsageThreshold'
+      required:
+      - events
+      type: object
+    EventsSubscReqDataRm:
+      description: this data type is defined in the same way as the EventsSubscReqData data type, but with the OpenAPI nullable property set to true.
+      nullable: true
+      properties:
+        events:
+          items:
+            $ref: '#/components/schemas/AfEventSubscription'
+          type: array
+        notifUri:
+          type: string
+        usgThres:
+          $ref: '#/components/schemas/UsageThresholdRm'
+      required:
+      - events
+      type: object
+    MediaComponent:
+      description: Identifies a media component.
+      example:
+        afAppId: afAppId
+        contVer: 7
+        codecs:
+        - null
+        - null
+        afRoutReq:
+          upPathChgSub:
+            notifCorreId: notifCorreId
+            notificationUri: notificationUri
+          appReloc: true
+          tempVals:
+          - startTime: 2000-01-23T04:56:07.000+00:00
+            stopTime: 2000-01-23T04:56:07.000+00:00
+          - startTime: 2000-01-23T04:56:07.000+00:00
+            stopTime: 2000-01-23T04:56:07.000+00:00
+          routeToLocs:
+          - dnai: dnai
+            routeInfo:
+              ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+              ipv4Addr: 198.51.100.1
+              portNumber: 0
+            routeProfId: routeProfId
+          - dnai: dnai
+            routeInfo:
+              ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+              ipv4Addr: 198.51.100.1
+              portNumber: 0
+            routeProfId: routeProfId
+          spVal:
+            presenceInfoList:
+              key:
+                ecgiList:
+                - eutraCellId: eutraCellId
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                - eutraCellId: eutraCellId
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                globalRanNodeIdList:
+                - gNbId:
+                    bitLength: 28
+                    gNBValue: gNBValue
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                - gNbId:
+                    bitLength: 28
+                    gNBValue: gNBValue
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                praId: praId
+                trackingAreaList:
+                - tac: tac
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                - tac: tac
+                  plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                ncgiList:
+                - plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                  nrCellId: nrCellId
+                - plmnId:
+                    mnc: mnc
+                    mcc: mcc
+                  nrCellId: nrCellId
+        marBwDl: marBwDl
+        mirBwDl: mirBwDl
+        medCompN: 9
+        mirBwUl: mirBwUl
+        marBwUl: marBwUl
+        medSubComps:
+          key:
+            fDescs:
+            - null
+            - null
+            tosTrCl: tosTrCl
+            marBwDl: marBwDl
+            ethfDescs:
+            - destMacAddr: destMacAddr
+              sourceMacAddr: sourceMacAddr
+              ethType: ethType
+              fDesc: fDesc
+              vlanTags:
+              - vlanTags
+              - vlanTags
+            - destMacAddr: destMacAddr
+              sourceMacAddr: sourceMacAddr
+              ethType: ethType
+              fDesc: fDesc
+              vlanTags:
+              - vlanTags
+              - vlanTags
+            marBwUl: marBwUl
+            fNum: 3
+      properties:
+        afAppId:
+          description: Contains an AF application identifier.
+          type: string
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirement'
+        contVer:
+          description: Represents the content version of some content.
+          format: int32
+          type: integer
+        codecs:
+          items:
+            $ref: '#/components/schemas/CodecData'
+          maxItems: 2
+          minItems: 1
+          type: array
+        fStatus:
+          $ref: '#/components/schemas/FlowStatus'
+        marBwDl:
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        marBwUl:
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        medCompN:
+          format: int32
+          type: integer
+        medSubComps:
+          additionalProperties:
+            $ref: '#/components/schemas/MediaSubComponent'
+          minProperties: 1
+          type: object
+        medType:
+          $ref: '#/components/schemas/MediaType'
+        mirBwDl:
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        mirBwUl:
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        resPrio:
+          $ref: '#/components/schemas/ReservPriority'
+      required:
+      - medCompN
+      type: object
+    MediaComponentRm:
+      description: This data type is defined in the same way as the MediaComponent data type, but with the OpenAPI nullable property set to true
+      nullable: true
+      properties:
+        afAppId:
+          description: Contains an AF application identifier.
+          type: string
+        afRoutReq:
+          $ref: '#/components/schemas/AfRoutingRequirementRm'
+        contVer:
+          description: Represents the content version of some content.
+          format: int32
+          type: integer
+        codecs:
+          items:
+            $ref: '#/components/schemas/CodecData'
+          maxItems: 2
+          minItems: 1
+          type: array
+        fStatus:
+          $ref: '#/components/schemas/FlowStatus'
+        marBwDl:
+          nullable: true
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        marBwUl:
+          nullable: true
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        medCompN:
+          format: int32
+          type: integer
+        medSubComps:
+          additionalProperties:
+            $ref: '#/components/schemas/MediaSubComponentRm'
+          minProperties: 1
+          type: object
+        medType:
+          $ref: '#/components/schemas/MediaType'
+        mirBwDl:
+          nullable: true
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        mirBwUl:
+          nullable: true
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        resPrio:
+          $ref: '#/components/schemas/ReservPriority'
+      required:
+      - medCompN
+      type: object
+    MediaSubComponent:
+      description: Identifies a media subcomponent
+      example:
+        fDescs:
+        - null
+        - null
+        tosTrCl: tosTrCl
+        marBwDl: marBwDl
+        ethfDescs:
+        - destMacAddr: destMacAddr
+          sourceMacAddr: sourceMacAddr
+          ethType: ethType
+          fDesc: fDesc
+          vlanTags:
+          - vlanTags
+          - vlanTags
+        - destMacAddr: destMacAddr
+          sourceMacAddr: sourceMacAddr
+          ethType: ethType
+          fDesc: fDesc
+          vlanTags:
+          - vlanTags
+          - vlanTags
+        marBwUl: marBwUl
+        fNum: 3
+      properties:
+        ethfDescs:
+          items:
+            $ref: '#/components/schemas/EthFlowDescription'
+          maxItems: 2
+          minItems: 1
+          type: array
+        fNum:
+          format: int32
+          type: integer
+        fDescs:
+          items:
+            $ref: '#/components/schemas/FlowDescription'
+          maxItems: 2
+          minItems: 1
+          type: array
+        fStatus:
+          $ref: '#/components/schemas/FlowStatus'
+        marBwDl:
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        marBwUl:
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        tosTrCl:
+          description: 2-octet string, where each octet is encoded in hexadecimal representation. The first octet contains the IPv4 Type-of-Service or the IPv6 Traffic-Class field and the second octet contains the ToS/Traffic Class mask field.
+          type: string
+        flowUsage:
+          $ref: '#/components/schemas/FlowUsage'
+      required:
+      - fNum
+      type: object
+    MediaSubComponentRm:
+      description: This data type is defined in the same way as the MediaSubComponent data type, but with the OpenAPI nullable property set to true. Removable attributes marBwDland marBwUl are defined with the corresponding removable data type.
+      nullable: true
+      properties:
+        ethfDescs:
+          items:
+            $ref: '#/components/schemas/EthFlowDescription'
+          maxItems: 2
+          minItems: 1
+          nullable: true
+          type: array
+        fNum:
+          format: int32
+          type: integer
+        fDescs:
+          items:
+            $ref: '#/components/schemas/FlowDescription'
+          maxItems: 2
+          minItems: 1
+          nullable: true
+          type: array
+        fStatus:
+          $ref: '#/components/schemas/FlowStatus'
+        marBwDl:
+          nullable: true
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        marBwUl:
+          nullable: true
+          pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+          type: string
+        tosTrCl:
+          description: this data type is defined in the same way as the TosTrafficClass data type, but with the OpenAPI nullable property set to true
+          nullable: true
+          type: string
+        flowUsage:
+          $ref: '#/components/schemas/FlowUsage'
+      required:
+      - fNum
+      type: object
+    EventsNotification:
+      description: describes the notification of a matched event
+      example:
+        qncReports:
+        - flows:
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+        - flows:
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+        evNotifs:
+        - flows:
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+        - flows:
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+        evSubsUri: evSubsUri
+        plmnId:
+          mnc: mnc
+          mcc: mcc
+        failedResourcAllocReports:
+        - flows:
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+        - flows:
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+          - fNums:
+            - 4
+            - 4
+            contVers:
+            - null
+            - null
+            medCompN: 7
+        anGwAddr:
+          anGwIpv6Addr: 2001:db8:85a3::8a2e:370:7334
+          anGwIpv4Addr: 198.51.100.1
+        usgRep:
+          duration: 0
+          totalVolume: 0
+          downlinkVolume: 0
+          uplinkVolume: 0
+      properties:
+        accessType:
+          $ref: '#/components/schemas/AccessType'
+        anGwAddr:
+          $ref: '#/components/schemas/AnGwAddress'
+        evSubsUri:
+          type: string
+        evNotifs:
+          items:
+            $ref: '#/components/schemas/AfEventNotification'
+          minItems: 1
+          type: array
+        failedResourcAllocReports:
+          items:
+            $ref: '#/components/schemas/ResourcesAllocationInfo'
+          minItems: 1
+          type: array
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        qncReports:
+          items:
+            $ref: '#/components/schemas/QosNotificationControlInfo'
+          minItems: 1
+          type: array
+        ratType:
+          $ref: '#/components/schemas/RatType'
+        usgRep:
+          $ref: '#/components/schemas/AccumulatedUsage'
+      required:
+      - evNotifs
+      - evSubsUri
+      type: object
+    AfEventSubscription:
+      description: describes the event information delivered in the subscription
+      example: {}
+      properties:
+        event:
+          $ref: '#/components/schemas/AfEvent'
+        notifMethod:
+          $ref: '#/components/schemas/AfNotifMethod'
+      required:
+      - event
+      type: object
+    AfEventNotification:
+      description: describes the event information delivered in the notification
+      example:
+        flows:
+        - fNums:
+          - 4
+          - 4
+          contVers:
+          - null
+          - null
+          medCompN: 7
+        - fNums:
+          - 4
+          - 4
+          contVers:
+          - null
+          - null
+          medCompN: 7
+      properties:
+        event:
+          $ref: '#/components/schemas/AfEvent'
+        flows:
+          items:
+            $ref: '#/components/schemas/Flows'
+          minItems: 1
+          type: array
+      required:
+      - event
+      type: object
+    TerminationInfo:
+      description: indicates the cause for requesting the deletion of the Individual Application Session Context resource
+      example:
+        resUri: resUri
+      properties:
+        termCause:
+          $ref: '#/components/schemas/TerminationCause'
+        resUri:
+          type: string
+      required:
+      - resUri
+      - termCause
+      type: object
+    AfRoutingRequirement:
+      description: describes the event information delivered in the subscription
+      example:
+        upPathChgSub:
+          notifCorreId: notifCorreId
+          notificationUri: notificationUri
+        appReloc: true
+        tempVals:
+        - startTime: 2000-01-23T04:56:07.000+00:00
+          stopTime: 2000-01-23T04:56:07.000+00:00
+        - startTime: 2000-01-23T04:56:07.000+00:00
+          stopTime: 2000-01-23T04:56:07.000+00:00
+        routeToLocs:
+        - dnai: dnai
+          routeInfo:
+            ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+            ipv4Addr: 198.51.100.1
+            portNumber: 0
+          routeProfId: routeProfId
+        - dnai: dnai
+          routeInfo:
+            ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+            ipv4Addr: 198.51.100.1
+            portNumber: 0
+          routeProfId: routeProfId
+        spVal:
+          presenceInfoList:
+            key:
+              ecgiList:
+              - eutraCellId: eutraCellId
+                plmnId:
+                  mnc: mnc
+                  mcc: mcc
+              - eutraCellId: eutraCellId
+                plmnId:
+                  mnc: mnc
+                  mcc: mcc
+              globalRanNodeIdList:
+              - gNbId:
+                  bitLength: 28
+                  gNBValue: gNBValue
+                plmnId:
+                  mnc: mnc
+                  mcc: mcc
+              - gNbId:
+                  bitLength: 28
+                  gNBValue: gNBValue
+                plmnId:
+                  mnc: mnc
+                  mcc: mcc
+              praId: praId
+              trackingAreaList:
+              - tac: tac
+                plmnId:
+                  mnc: mnc
+                  mcc: mcc
+              - tac: tac
+                plmnId:
+                  mnc: mnc
+                  mcc: mcc
+              ncgiList:
+              - plmnId:
+                  mnc: mnc
+                  mcc: mcc
+                nrCellId: nrCellId
+              - plmnId:
+                  mnc: mnc
+                  mcc: mcc
+                nrCellId: nrCellId
+      properties:
+        appReloc:
+          type: boolean
+        routeToLocs:
+          items:
+            $ref: '#/components/schemas/RouteToLocation'
+          minItems: 1
+          type: array
+        spVal:
+          $ref: '#/components/schemas/SpatialValidity'
+        tempVals:
+          items:
+            $ref: '#/components/schemas/TemporalValidity'
+          minItems: 1
+          type: array
+        upPathChgSub:
+          $ref: '#/components/schemas/UpPathChgEvent'
+      type: object
+    SpatialValidity:
+      description: describes explicitly the route to an Application location
+      example:
+        presenceInfoList:
+          key:
+            ecgiList:
+            - eutraCellId: eutraCellId
+              plmnId:
+                mnc: mnc
+                mcc: mcc
+            - eutraCellId: eutraCellId
+              plmnId:
+                mnc: mnc
+                mcc: mcc
+            globalRanNodeIdList:
+            - gNbId:
+                bitLength: 28
+                gNBValue: gNBValue
+              plmnId:
+                mnc: mnc
+                mcc: mcc
+            - gNbId:
+                bitLength: 28
+                gNBValue: gNBValue
+              plmnId:
+                mnc: mnc
+                mcc: mcc
+            praId: praId
+            trackingAreaList:
+            - tac: tac
+              plmnId:
+                mnc: mnc
+                mcc: mcc
+            - tac: tac
+              plmnId:
+                mnc: mnc
+                mcc: mcc
+            ncgiList:
+            - plmnId:
+                mnc: mnc
+                mcc: mcc
+              nrCellId: nrCellId
+            - plmnId:
+                mnc: mnc
+                mcc: mcc
+              nrCellId: nrCellId
+      properties:
+        presenceInfoList:
+          additionalProperties:
+            $ref: '#/components/schemas/PresenceInfo'
+          minProperties: 1
+          type: object
+      required:
+      - presenceInfoList
+      type: object
+    SpatialValidityRm:
+      description: this data type is defined in the same way as the SpatialValidity data type, but with the OpenAPI nullable property set to true
+      nullable: true
+      properties:
+        presenceInfoList:
+          additionalProperties:
+            $ref: '#/components/schemas/PresenceInfo'
+          minProperties: 1
+          type: object
+      required:
+      - presenceInfoList
+      type: object
+    AfRoutingRequirementRm:
+      description: this data type is defined in the same way as the AfRoutingRequirement data type, but with the OpenAPI nullable property set to true and the spVal and tempVals attributes defined as removable.
+      nullable: true
+      properties:
+        appReloc:
+          type: boolean
+        routeToLocs:
+          items:
+            $ref: '#/components/schemas/RouteToLocation'
+          minItems: 1
+          nullable: true
+          type: array
+        spVal:
+          $ref: '#/components/schemas/SpatialValidityRm'
+        tempVals:
+          items:
+            $ref: '#/components/schemas/TemporalValidity'
+          minItems: 1
+          nullable: true
+          type: array
+        upPathChgSub:
+          $ref: '#/components/schemas/UpPathChgEvent'
+      type: object
+    AnGwAddress:
+      anyOf:
+      - required:
+        - anGwIpv4Addr
+      - required:
+        - anGwIpv6Addr
+      description: describes the address of the access network gateway control node
+      example:
+        anGwIpv6Addr: 2001:db8:85a3::8a2e:370:7334
+        anGwIpv4Addr: 198.51.100.1
+      properties:
+        anGwIpv4Addr:
+          $ref: '#/components/schemas/Ipv4Addr'
+        anGwIpv6Addr:
+          $ref: '#/components/schemas/Ipv6Addr'
+      type: object
+    Flows:
+      description: Identifies the flows
+      example:
+        fNums:
+        - 4
+        - 4
+        contVers:
+        - null
+        - null
+        medCompN: 7
+      properties:
+        contVers:
+          items:
+            $ref: '#/components/schemas/ContentVersion'
+          minItems: 1
+          type: array
+        fNums:
+          items:
+            format: int32
+            type: integer
+          minItems: 1
+          type: array
+        medCompN:
+          format: int32
+          type: integer
+      required:
+      - medCompN
+      type: object
+    EthFlowDescription:
+      description: Identifies an Ethernet flow
+      example:
+        destMacAddr: destMacAddr
+        sourceMacAddr: sourceMacAddr
+        ethType: ethType
+        fDesc: fDesc
+        vlanTags:
+        - vlanTags
+        - vlanTags
+      properties:
+        destMacAddr:
+          pattern: ^([0-9a-fA-F]{2})((-[0-9a-fA-F]{2}){5})$
+          type: string
+        ethType:
+          type: string
+        fDesc:
+          description: Defines a packet filter of an IP flow.
+          type: string
+        fDir:
+          $ref: '#/components/schemas/FlowDirection'
+        sourceMacAddr:
+          pattern: ^([0-9a-fA-F]{2})((-[0-9a-fA-F]{2}){5})$
+          type: string
+        vlanTags:
+          items:
+            type: string
+          maxItems: 2
+          minItems: 1
+          type: array
+      required:
+      - ethType
+      type: object
+    ResourcesAllocationInfo:
+      description: describes the status of the PCC rule(s) related to certain media components.
+      example:
+        flows:
+        - fNums:
+          - 4
+          - 4
+          contVers:
+          - null
+          - null
+          medCompN: 7
+        - fNums:
+          - 4
+          - 4
+          contVers:
+          - null
+          - null
+          medCompN: 7
+      properties:
+        mcResourcStatus:
+          $ref: '#/components/schemas/MediaComponentResourcesStatus'
+        flows:
+          items:
+            $ref: '#/components/schemas/Flows'
+          minItems: 1
+          type: array
+      required:
+      - mcResourcStatus
+      type: object
+    TemporalValidity:
+      description: Indicates the time interval(s) during which the AF request is to be applied
+      example:
+        startTime: 2000-01-23T04:56:07.000+00:00
+        stopTime: 2000-01-23T04:56:07.000+00:00
+      properties:
+        startTime:
+          format: date-time
+          type: string
+        stopTime:
+          format: date-time
+          type: string
+      type: object
+    QosNotificationControlInfo:
+      description: Indicates whether the QoS targets for a GRB flow are not guaranteed or guaranteed again
+      example:
+        flows:
+        - fNums:
+          - 4
+          - 4
+          contVers:
+          - null
+          - null
+          medCompN: 7
+        - fNums:
+          - 4
+          - 4
+          contVers:
+          - null
+          - null
+          medCompN: 7
+      properties:
+        notifType:
+          $ref: '#/components/schemas/QosNotifType'
+        flows:
+          items:
+            $ref: '#/components/schemas/Flows'
+          minItems: 1
+          type: array
+      required:
+      - notifType
+      type: object
+    AfAppId:
+      description: Contains an AF application identifier.
+      type: string
+    AspId:
+      description: Contains an identity of an application service provider.
+      type: string
+    CodecData:
+      description: Contains codec related information.
+      type: string
+    ContentVersion:
+      description: Represents the content version of some content.
+      format: int32
+      type: integer
+    FlowDescription:
+      description: Defines a packet filter of an IP flow.
+      type: string
+    SponId:
+      description: Contains an identity of a sponsor.
+      type: string
+    TosTrafficClass:
+      description: 2-octet string, where each octet is encoded in hexadecimal representation. The first octet contains the IPv4 Type-of-Service or the IPv6 Traffic-Class field and the second octet contains the ToS/Traffic Class mask field.
+      type: string
+    TosTrafficClassRm:
+      description: this data type is defined in the same way as the TosTrafficClass data type, but with the OpenAPI nullable property set to true
+      nullable: true
+      type: string
+    MediaType:
+      anyOf:
+      - enum:
+        - AUDIO
+        - VIDEO
+        - DATA
+        - APPLICATION
+        - CONTROL
+        - TEXT
+        - MESSAGE
+        - OTHER
+        type: string
+      - type: string
+    ReservPriority:
+      anyOf:
+      - enum:
+        - PRIO_1
+        - PRIO_2
+        - PRIO_3
+        - PRIO_4
+        - PRIO_5
+        - PRIO_6
+        - PRIO_7
+        - PRIO_8
+        - PRIO_9
+        - PRIO_10
+        - PRIO_11
+        - PRIO_12
+        - PRIO_13
+        - PRIO_14
+        - PRIO_15
+        - PRIO_16
+        type: string
+      - type: string
+    ServAuthInfo:
+      anyOf:
+      - enum:
+        - TP_NOT_KNOWN
+        - TP_EXPIRED
+        - TP_NOT_YET_OCURRED
+        type: string
+      - type: string
+    SponsoringStatus:
+      anyOf:
+      - enum:
+        - SPONSOR_DISABLED
+        - SPONSOR_ENABLED
+        type: string
+      - type: string
+    AfEvent:
+      anyOf:
+      - enum:
+        - ACCESS_TYPE_CHANGE
+        - FAILED_RESOURCES_ALLOCATION
+        - PLMN_CHG
+        - QOS_NOTIF
+        - SUCCESSFUL_RESOURCES_ALLOCATION
+        - USAGE_REPORT
+        type: string
+      - type: string
+    AfNotifMethod:
+      anyOf:
+      - enum:
+        - EVENT_DETECTION
+        - ONE_TIME
+        type: string
+      - type: string
+    QosNotifType:
+      anyOf:
+      - enum:
+        - GUARANTEED
+        - NOT_GUARANTEED
+        type: string
+      - type: string
+    TerminationCause:
+      anyOf:
+      - enum:
+        - ALL_SDF_DEACTIVATION
+        - PDU_SESSION_TERMINATION
+        type: string
+      - type: string
+    MediaComponentResourcesStatus:
+      anyOf:
+      - enum:
+        - ACTIVE
+        - INACTIVE
+        type: string
+      - type: string
+    FlowUsage:
+      anyOf:
+      - enum:
+        - NO_INFO
+        - RTCP
+        type: string
+      - type: string
+    FlowStatus:
+      anyOf:
+      - enum:
+        - ENABLED-UPLINK
+        - ENABLED-DOWNLINK
+        - ENABLED
+        - DISABLED
+        - REMOVED
+        type: string
+      - type: string
+    ProblemDetails:
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          format: int32
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        cause:
+          type: string
+        invalidParams:
+          items:
+            $ref: '#/components/schemas/InvalidParam'
+          minItems: 1
+          type: array
+      type: object
+    Uri:
+      type: string
+    InvalidParam:
+      properties:
+        param:
+          type: string
+        reason:
+          type: string
+      required:
+      - param
+      type: object
+    ProblemDetails_2:
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          format: int32
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        cause:
+          type: string
+        invalidParams:
+          items:
+            $ref: '#/components/schemas/InvalidParam_2'
+          minItems: 1
+          type: array
+      type: object
+    Uri_2:
+      type: string
+    InvalidParam_2:
+      properties:
+        param:
+          type: string
+        reason:
+          type: string
+      required:
+      - param
+      type: object
+    BdtReferenceId:
+      description: string identifying a BDT Reference ID as defined in subclause 5.3.3 of 3GPP TS 29.154.
+      type: string
+    Dnn:
+      type: string
+    Snssai:
+      example:
+        sd: sd
+        sst: 51
+      properties:
+        sst:
+          format: int32
+          maximum: 255
+          minimum: 0
+          type: integer
+        sd:
+          pattern: ^[A-Fa-f0-9]{6}$
+          type: string
+      required:
+      - sst
+      type: object
+    Supi:
+      pattern: ^(imsi-[0-9]{5,15}|nai-.+|.+)$
+      type: string
+    SupportedFeatures:
+      pattern: ^[A-Fa-f0-9]*$
+      type: string
+    Ipv4Addr:
+      example: 198.51.100.1
+      pattern: ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$
+      type: string
+    Ipv6Addr:
+      allOf:
+      - pattern: ^((:|(0?|([1-9a-f][0-9a-f]{0,3}))):)((0?|([1-9a-f][0-9a-f]{0,3})):){0,6}(:|(0?|([1-9a-f][0-9a-f]{0,3})))$
+      - pattern: ^((([^:]+:){7}([^:]+))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?))$
+      example: 2001:db8:85a3::8a2e:370:7334
+      type: string
+    MacAddr48:
+      pattern: ^([0-9a-fA-F]{2})((-[0-9a-fA-F]{2}){5})$
+      type: string
+    UsageThreshold:
+      example:
+        duration: 0
+        totalVolume: 0
+        downlinkVolume: 0
+        uplinkVolume: 0
+      properties:
+        duration:
+          description: Unsigned integer identifying a period of time in units of seconds.
+          format: int32
+          minimum: 0
+          type: integer
+        totalVolume:
+          description: Unsigned integer identifying a volume in units of bytes.
+          format: int64
+          minimum: 0
+          type: integer
+        downlinkVolume:
+          description: Unsigned integer identifying a volume in units of bytes.
+          format: int64
+          minimum: 0
+          type: integer
+        uplinkVolume:
+          description: Unsigned integer identifying a volume in units of bytes.
+          format: int64
+          minimum: 0
+          type: integer
+      type: object
+    DurationSec:
+      description: Unsigned integer identifying a period of time in units of seconds.
+      format: int32
+      minimum: 0
+      type: integer
+    Volume:
+      description: Unsigned integer identifying a volume in units of bytes.
+      format: int64
+      minimum: 0
+      type: integer
+    UsageThresholdRm:
+      nullable: true
+      properties:
+        duration:
+          description: Unsigned integer identifying a period of time in units of seconds with "nullable=true" property.
+          format: int32
+          minimum: 0
+          nullable: true
+          type: integer
+        totalVolume:
+          description: Unsigned integer identifying a volume in units of bytes with "nullable=true" property.
+          format: int64
+          minimum: 0
+          nullable: true
+          type: integer
+        downlinkVolume:
+          description: Unsigned integer identifying a volume in units of bytes with "nullable=true" property.
+          format: int64
+          minimum: 0
+          nullable: true
+          type: integer
+        uplinkVolume:
+          description: Unsigned integer identifying a volume in units of bytes with "nullable=true" property.
+          format: int64
+          minimum: 0
+          nullable: true
+          type: integer
+      type: object
+    DurationSecRm:
+      description: Unsigned integer identifying a period of time in units of seconds with "nullable=true" property.
+      format: int32
+      minimum: 0
+      nullable: true
+      type: integer
+    VolumeRm:
+      description: Unsigned integer identifying a volume in units of bytes with "nullable=true" property.
+      format: int64
+      minimum: 0
+      nullable: true
+      type: integer
+    BitRate:
+      pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+      type: string
+    BitRateRm:
+      nullable: true
+      pattern: ^\d+(\.\d+)? (bps|Kbps|Mbps|Gbps|Tbps)$
+      type: string
+    AccessType:
+      enum:
+      - 3GPP_ACCESS
+      - NON_3GPP_ACCESS
+      type: string
+    PlmnId:
+      example:
+        mnc: mnc
+        mcc: mcc
+      properties:
+        mcc:
+          pattern: ^\d{3}$
+          type: string
+        mnc:
+          pattern: ^\d{2,3}$
+          type: string
+      required:
+      - mcc
+      - mnc
+      type: object
+    Mcc:
+      pattern: ^\d{3}$
+      type: string
+    Mnc:
+      pattern: ^\d{2,3}$
+      type: string
+    RatType:
+      anyOf:
+      - enum:
+        - NR
+        - EUTRA
+        - WLAN
+        - VIRTUAL
+        type: string
+      - type: string
+    AccumulatedUsage:
+      example:
+        duration: 0
+        totalVolume: 0
+        downlinkVolume: 0
+        uplinkVolume: 0
+      properties:
+        duration:
+          description: Unsigned integer identifying a period of time in units of seconds.
+          format: int32
+          minimum: 0
+          type: integer
+        totalVolume:
+          description: Unsigned integer identifying a volume in units of bytes.
+          format: int64
+          minimum: 0
+          type: integer
+        downlinkVolume:
+          description: Unsigned integer identifying a volume in units of bytes.
+          format: int64
+          minimum: 0
+          type: integer
+        uplinkVolume:
+          description: Unsigned integer identifying a volume in units of bytes.
+          format: int64
+          minimum: 0
+          type: integer
+      type: object
+    RouteToLocation:
+      example:
+        dnai: dnai
+        routeInfo:
+          ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+          ipv4Addr: 198.51.100.1
+          portNumber: 0
+        routeProfId: routeProfId
+      nullable: true
+      properties:
+        dnai:
+          type: string
+        routeInfo:
+          $ref: '#/components/schemas/RouteInformation'
+        routeProfId:
+          nullable: true
+          type: string
+      required:
+      - dnai
+      type: object
+    Dnai:
+      type: string
+    RouteInformation:
+      example:
+        ipv6Addr: 2001:db8:85a3::8a2e:370:7334
+        ipv4Addr: 198.51.100.1
+        portNumber: 0
+      nullable: true
+      properties:
+        ipv4Addr:
+          example: 198.51.100.1
+          pattern: ^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$
+          type: string
+        ipv6Addr:
+          $ref: '#/components/schemas/Ipv6Addr'
+        portNumber:
+          format: int32
+          minimum: 0
+          type: integer
+      required:
+      - portNumber
+      type: object
+    Uinteger:
+      format: int32
+      minimum: 0
+      type: integer
+    UpPathChgEvent:
+      example:
+        notifCorreId: notifCorreId
+        notificationUri: notificationUri
+      nullable: true
+      properties:
+        notificationUri:
+          type: string
+        notifCorreId:
+          description: It is used to set the value of Notification Correlation ID in the notification sent by the SMF.
+          type: string
+        dnaiChgType:
+          $ref: '#/components/schemas/DnaiChangeType'
+      required:
+      - dnaiChgType
+      - notifCorreId
+      - notificationUri
+      type: object
+    PresenceInfo:
+      example:
+        ecgiList:
+        - eutraCellId: eutraCellId
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+        - eutraCellId: eutraCellId
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+        globalRanNodeIdList:
+        - gNbId:
+            bitLength: 28
+            gNBValue: gNBValue
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+        - gNbId:
+            bitLength: 28
+            gNBValue: gNBValue
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+        praId: praId
+        trackingAreaList:
+        - tac: tac
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+        - tac: tac
+          plmnId:
+            mnc: mnc
+            mcc: mcc
+        ncgiList:
+        - plmnId:
+            mnc: mnc
+            mcc: mcc
+          nrCellId: nrCellId
+        - plmnId:
+            mnc: mnc
+            mcc: mcc
+          nrCellId: nrCellId
+      properties:
+        praId:
+          type: string
+        presenceState:
+          $ref: '#/components/schemas/PresenceState'
+        trackingAreaList:
+          items:
+            $ref: '#/components/schemas/Tai'
+          minItems: 1
+          type: array
+        ecgiList:
+          items:
+            $ref: '#/components/schemas/Ecgi'
+          minItems: 1
+          type: array
+        ncgiList:
+          items:
+            $ref: '#/components/schemas/Ncgi'
+          minItems: 1
+          type: array
+        globalRanNodeIdList:
+          items:
+            $ref: '#/components/schemas/GlobalRanNodeId'
+          minItems: 1
+          type: array
+      type: object
+    PresenceState:
+      anyOf:
+      - enum:
+        - IN_AREA
+        - OUT_OF_AREA
+        - UNKNOWN
+        - INACTIVE
+        type: string
+      - type: string
+    Tai:
+      example:
+        tac: tac
+        plmnId:
+          mnc: mnc
+          mcc: mcc
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        tac:
+          pattern: (^[A-Fa-f0-9]{4}$)|(^[A-Fa-f0-9]{6}$)
+          type: string
+      required:
+      - plmnId
+      - tac
+      type: object
+    Tac:
+      pattern: (^[A-Fa-f0-9]{4}$)|(^[A-Fa-f0-9]{6}$)
+      type: string
+    Ecgi:
+      example:
+        eutraCellId: eutraCellId
+        plmnId:
+          mnc: mnc
+          mcc: mcc
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        eutraCellId:
+          pattern: ^[A-Fa-f0-9]{7}$
+          type: string
+      required:
+      - eutraCellId
+      - plmnId
+      type: object
+    EutraCellId:
+      pattern: ^[A-Fa-f0-9]{7}$
+      type: string
+    Ncgi:
+      example:
+        plmnId:
+          mnc: mnc
+          mcc: mcc
+        nrCellId: nrCellId
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        nrCellId:
+          pattern: ^[A-Fa-f0-9]{9}$
+          type: string
+      required:
+      - nrCellId
+      - plmnId
+      type: object
+    NrCellId:
+      pattern: ^[A-Fa-f0-9]{9}$
+      type: string
+    GlobalRanNodeId:
+      example:
+        gNbId:
+          bitLength: 28
+          gNBValue: gNBValue
+        plmnId:
+          mnc: mnc
+          mcc: mcc
+      oneOf:
+      - required:
+        - n3IwfId
+      - required:
+        - gNbId
+      - required:
+        - ngeNbId
+      properties:
+        plmnId:
+          $ref: '#/components/schemas/PlmnId'
+        n3IwfId:
+          $ref: '#/components/schemas/N3IwfId'
+        gNbId:
+          $ref: '#/components/schemas/GNbId'
+        ngeNbId:
+          $ref: '#/components/schemas/NgeNbId'
+      required:
+      - plmnId
+      type: object
+    N3IwfId:
+      type: string
+    GNbId:
+      example:
+        bitLength: 28
+        gNBValue: gNBValue
+      properties:
+        bitLength:
+          format: int32
+          maximum: 32
+          minimum: 22
+          type: integer
+        gNBValue:
+          pattern: ^[A-Fa-f0-9]{6,8}$
+          type: string
+      required:
+      - bitLength
+      - gNBValue
+      type: object
+    NgeNbId:
+      pattern: ^(MacroNGeNB-[A-Fa-f0-9]{5}|LMacroNGeNB-[A-Fa-f0-9]{6}|SMacroNGeNB-[A-Fa-f0-9]{5})$
+      type: string
+    FlowDirection:
+      anyOf:
+      - enum:
+        - DOWNLINK
+        - UPLINK
+        - BIDIRECTIONAL
+        - UNSPECIFIED
+        type: string
+      - description: |
+          This string provides forward-compatibility with future extensions to the enumeration but is not used to encode content defined in the present version of this API.
+        type: string
+      description: |
+        Possible values are - DOWNLINK: The corresponding filter applies for traffic to the UE. - UPLINK: The corresponding filter applies for traffic from the UE. - BIDIRECTIONAL: The corresponding filter applies for traffic both to and from the UE. - UNSPECIFIED: The corresponding filter applies for traffic to the UE (downlink), but has no specific direction declared. The service data flow detection shall apply the filter for uplink traffic as if the filter was bidirectional. The PCF shall not use the value UNSPECIFIED in filters created by the network in NW-initiated procedures. The PCF shall only include the value UNSPECIFIED in filters in UE-initiated procedures if the same value is received from the SMF.
+    DateTime:
+      format: date-time
+      type: string
+    DnaiChangeType:
+      anyOf:
+      - enum:
+        - EARLY
+        - EARLY_LATE
+        - LATE
+        type: string
+      - description: |
+          This string provides forward-compatibility with future extensions to the enumeration but is not used to encode content defined in the present version of this API.
+        type: string
+      description: |
+        Possible values are - EARLY: Early notification of UP path reconfiguration. - EARLY_LATE: Early and late notification of UP path reconfiguration. This value shall only be present in the subscription to the DNAI change event. - LATE: Late notification of UP path reconfiguration.
+  securitySchemes:
+    oAuth2ClientCredentials:
+      flows:
+        clientCredentials:
+          scopes:
+            npcf-policyauthorization: Access to the Npcf_PolicyAuthorization API
+          tokenUrl: '{nrfApiRoot}/oauth2/token'
+      type: oauth2
