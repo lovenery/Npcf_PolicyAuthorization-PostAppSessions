@@ -10,11 +10,24 @@
 package openapi
 
 import (
+	"fmt"
 	"net/http"
+	"encoding/json"
 )
 
 // PostAppSessions - Creates a new Individual Application Session Context resource
 func PostAppSessions(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+
+	var ascRespData AppSessionContextRespData
+	ascRespData = AppSessionContextRespData {
+		SuppFeat: "2",
+	}
+	var appSessionContext AppSessionContext
+	appSessionContext.AscRespData = &ascRespData
+
+	json.NewEncoder(w).Encode(&appSessionContext)
+	w.WriteHeader(http.StatusCreated)
+
+	fmt.Printf("appSessionContext: %+v\n", appSessionContext)
 }
